@@ -1,7 +1,14 @@
 const Task = require('../models/Task');
 
-const getAllTasks = (req, res) => {
-  res.send('タスクをすべて取得しました');
+const getAllTasks = async (req, res) => {
+  try {
+    const allTasks = await Task.find({});
+    res.status(200).json(allTasks);
+    console.log('success')
+  } catch (err) {
+    console.log('error')
+    res.status(500).json(err);
+  };
 };
 
 const createTask = async (req, res) => {
@@ -15,16 +22,59 @@ const createTask = async (req, res) => {
   };
 };
 
-const getSingleTask = (req, res) => {
-  res.send('ある特定のタスクを取得しました');
+const getSingleTask = async (req, res) => {
+  try {
+    const task = await Task.findOne({ _id: req.params.id });
+    if (!task) {
+      return res.status(404).json(`_id${req.params.id}は存在しません`);
+    }
+
+    res.status(200).json(task);
+
+    console.log('success')
+  } catch (err) {
+    console.log('error')
+    res.status(500).json(err);
+  };
 };
 
-const updateTask = (req, res) => {
-  res.send('ある特定のタスクを更新しました');
+const updateTask = async (req, res) => {
+  try {
+    const task = await Task.findOneAndUpdate(
+      { _id: req.params.id }, 
+      req.body,
+      //options: if true return the modified document rather than the original
+      {
+        new: true
+      }
+    );
+    if (!task) {
+      return res.status(404).json(`_id${req.params.id}は存在しません`);
+    }
+
+    res.status(200).json(task);
+
+    console.log('success')
+  } catch (err) {
+    console.log('error')
+    res.status(500).json(err);
+  }; 
 };
 
-const deleteTask = (req, res) => {
-  res.send('ある特定のタスクを削除しました');
+const deleteTask = async (req, res) => {
+  try {
+    const task = await Task.deleteOne({ _id: req.params.id });
+    if (!task) {
+      return res.status(404).json(`_id${req.params.id}は存在しません`);
+    }
+
+    res.status(200).json(task);
+
+    console.log('success')
+  } catch (err) {
+    console.log('error')
+    res.status(500).json(err);
+  }; 
 };
 
 module.exports = {
